@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            name = "ForgeFS"
+            url = "http://files.minecraftforge.net/maven"
+        }
+        maven {
+            name = "sonatype"
+            url = "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+    }
+}
+
+apply plugin: "fml"
+
+repositories {
+    flatDir {
+        name "fileRepo"
+        dirs "repo"
+    }
+}
+
+// define the properties file
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    // read config.  it shall from now on be referenced as simply config or as project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+group = "com.github.glitchfiend.biomesoplenty"
+version = config.mod_version
+archivesBaseName = "BiomesOPlenty"
+
+minecraft {
+    version = config.minecraft_version + "-" + config.forge_version // grab latest forge
+    assetDir = "run/assets"
+
+}
+
+// add some stuff to the version
+version = "${config.minecraft_version}-${config.mod_version}.${System.getenv().BUILD_NUMBER}"
